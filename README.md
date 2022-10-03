@@ -1,4 +1,5 @@
 # k8s-client-go-practice-deployment
+![](https://github.com/googs1025/k8s-client-go-practice-deployment/blob/main/image/client-go-kubernetes.png?ram=true)
 ### 项目思路逻辑
 结合**golang**+**k8s**+**client-go**实现restful-http-api 简易管理系统
 ### 项目目录
