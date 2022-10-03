@@ -1,0 +1,36 @@
+
+<div class="outbox">
+    {{template "header" .}}
+    <div class="table-container is-centered" style="margin:0 auto">
+        <table class="table" >
+            <thead>
+            <tr>
+                <th style="width:50px"></th>
+                <th style="width:100px">状态</th>
+                <th style="width:40%">名称</th>
+                <th style="width:20%">镜像</th>
+                <th style="width:10%">Pod副本数</th>
+            </tr>
+            </thead>
+
+            <tbody>
+                {{range .Data.DepList}}
+                <tr>
+                    <td><input type="checkbox"/></td>
+                    <td> - </td>
+                    <td>{{.Name}}</td>
+                    <td>{{.Images}}</td>
+                    <td class="is-border"> <span>{{index .Replicas 0}} </span>
+                        / <span class="is-green" >{{index .Replicas 1}} </span>
+                        / <span class="is-red" >{{index .Replicas 2}}</span></td>
+
+                </tr>
+                {{ end }}
+
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+{{template "footer" .}}

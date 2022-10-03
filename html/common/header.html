@@ -1,0 +1,21 @@
+
+{{ define "header" }}
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+
+        <title>{{.Title}}</title>
+        <link href="/static/css/common.css" rel="stylesheet"/>
+        <link href="/static/css/bulma.min.css" rel="stylesheet"/>
+
+    </head>
+    <body>
+        <nav class="breadcrumb is-centered" aria-label="breadcrumbs">
+            <ul>
+                <li><a href="/">首页</a></li>
+                <li><a href="/deployments">查看deployment</a></li>
+                <li><a href="/services">查看service</a></li>
+            </ul>
+        </nav>
+{{ end }}

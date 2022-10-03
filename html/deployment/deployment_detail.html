@@ -1,0 +1,85 @@
+
+<div class="outbox">
+    {{template "header" .}}
+    <div class="table-container is-centered" style="margin:0 auto">
+        <table class="table" >
+            <tbody>
+              <tr>
+                  <td id="ns" v="{{.Data.DepDetail.NameSpace}}">命名空间：{{.Data.DepDetail.NameSpace}}</td>
+                  <td id="deployment" v="{{.Data.DepDetail.Name}}">名称:{{.Data.DepDetail.Name}}</td>
+                  <td>镜像：{{.Data.DepDetail.Images}}</td>
+                  <td>创建时间:{{.Data.DepDetail.CreateTime}}</td>
+              </tr>
+            <tr>
+                <td colspan="4">副本:可用:
+                    {{index .Data.DepDetail.Replicas 1}}/不可用:{{index .Data.DepDetail.Replicas 2}}
+                    <button id="incr" class="button is-info is-small is-btn is-bold">+</button>
+                    <button id="dec" class="button is-info is-small is-btn is-bold">-</button>
+                </td>
+            </tr>
+            <script>
+                function getObject(dec){
+                    return {
+                        "ns":$("#ns").attr("v"),
+                        "deployment":$("#deployment").attr("v"),
+                        "dec":dec
+                    }
+                }
+                function incr(dec){
+                    $.ajax({
+                        type: "POST",
+                        url: "/update/deployment/scale",
+                        data: JSON.stringify(getObject(dec)),
+                        dataType: "json",
+                        success: function(data){
+                            if(data.message==="Ok"){
+                                alert("操作成功")
+                                self.location.reload()
+                            }
+                        },
+                        error:function (data) {
+                            alert(data.responseJSON.error)
+                        }
+                    })
+                }
+                $("#incr").click(function () {
+                    incr(false)
+                })
+                $("#dec").click(function () {
+                    incr(true)
+                })
+
+            </script>
+            </tbody>
+        </table>
+        <nav class="panel"  >
+            <p class="panel-heading">
+                Pods信息
+            </p>
+            <div class="table-container">
+             <table class="table"  >
+                <thead>
+                <th width="50%">名称</th>
+                <th>镜像</th>
+                <th>主机</th>
+                <th>创建时间</th>
+                </thead>
+                <tbody>
+                {{range .Data.DepDetail.Pods}}
+                    <tr>
+                        <td>{{.Name}}</td>
+                        <td>{{.Images}}</td>
+                        <td>{{.NodeName}}</td>
+                        <td>{{.CreateTime}}</td>
+                    </tr>
+                {{end}}
+                </tbody>
+            </table>
+            </div>
+        </nav>
+
+    </div>
+
+</div>
+
+{{template "footer" .}}
