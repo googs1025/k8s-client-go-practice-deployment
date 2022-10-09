@@ -82,3 +82,13 @@ cd 进入项目根目录
 5. update deployment:自定义更新deployment
 6. create deployment:创建deployment
 ```
+
+### list-watch
+```
+list:http短链接调用资源的Api，获取列表 => 或有大量请求的缺点
+watch:http长连接持续监听资源，有变化则返回一个watchEvent
+使用client-go中的informer可以对list-watch机制进行封装。
+解释：
+1.刚开始初始化，调用list api获取全量list，并缓存起来。
+2.调用watch api去watch资源，发生变更后会通过机制维护缓存(不需要每次都请求api server)
+```

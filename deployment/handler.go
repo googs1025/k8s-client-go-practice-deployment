@@ -9,7 +9,7 @@ import (
 )
 
 
-//
+// RegHandlers 请求的post路由
 func RegHandlers(r *gin.Engine) {
 	// 对副本缩阔容
 	r.POST("/update/deployment/scale", incrReplicas)
