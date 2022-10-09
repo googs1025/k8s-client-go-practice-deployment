@@ -13,8 +13,13 @@ import (
 func RegHandlers(r *gin.Engine) {
 	// 对副本缩阔容
 	r.POST("/update/deployment/scale", incrReplicas)
+	r.POST("/core.deployments")
 }
 
+func ListAllDeployment(c *gin.Context) {
+	ns := c.DefaultQuery("namespace", "default")
+	c.JSON(200, gin.H{"message":"ok", "result":ListAllByWatchList(ns)})
+}
 
 func incrReplicas(c *gin.Context) {
 	// request
