@@ -11,9 +11,14 @@ import (
 //
 func GetPodsByDep(namespace string, dep *v1.Deployment) []*Pod {
 	ctx := context.Background()
+	//listOpt := metav1.ListOptions{
+	//	LabelSelector: GetLabels(dep.Spec.Selector.MatchLabels),
+	//}
+
 	listOpt := metav1.ListOptions{
-		LabelSelector: GetLabels(dep.Spec.Selector.MatchLabels),
+		LabelSelector: GetRsLabelByDeployment(dep),
 	}
+
 	list, err := initClient.K8sClient.CoreV1().Pods(namespace).List(ctx, listOpt)
 	if err != nil {
 		panic(err.Error())
