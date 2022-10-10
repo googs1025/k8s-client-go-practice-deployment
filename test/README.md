@@ -7,4 +7,4 @@
 5. 如果有超时控制，可以使用
 ```
 
-![]()
+![](https://github.com/googs1025/k8s-client-go-practice-deployment/blob/main/image/kubernetes_informer.png?ram=true)
