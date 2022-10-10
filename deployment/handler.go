@@ -1,11 +1,11 @@
 package deployment
 
 import (
+	"context"
 	"github.com/gin-gonic/gin"
 	"k8s-client-go-api-practice/initClient"
 	"k8s-client-go-api-practice/util"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"context"
 )
 
 
@@ -13,14 +13,16 @@ import (
 func RegHandlers(r *gin.Engine) {
 	// 对副本缩阔容
 	r.POST("/update/deployment/scale", incrReplicas)
-	r.POST("/core.deployments")
+	r.POST("/core/deployments", ListAllDeployment)
 }
 
+// ListAllDeployment list 传入namespace 结果
 func ListAllDeployment(c *gin.Context) {
 	ns := c.DefaultQuery("namespace", "default")
 	c.JSON(200, gin.H{"message":"ok", "result":ListAllByWatchList(ns)})
 }
 
+// incrReplicas 扩缩容副本数
 func incrReplicas(c *gin.Context) {
 	// request
 	req := struct {
