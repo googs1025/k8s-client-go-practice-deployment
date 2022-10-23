@@ -22,12 +22,12 @@ func(depMap *DeploymentMap) Add(dep *v1.Deployment) {
 		depMap.data.Store(dep.Namespace, []*v1.Deployment{dep})
 	}
 }
-//更新
+// Update 更新
 func(depMap *DeploymentMap) Update(dep *v1.Deployment) error {
 	if list,ok := depMap.data.Load(dep.Namespace); ok {
-		for i,range_dep := range list.([]*v1.Deployment){
-			if range_dep.Name == dep.Name {
-				list.([]*v1.Deployment)[i] = dep
+		for i, rangeDep := range list.([]*v1.Deployment){
+			if rangeDep.Name == dep.Name {
+				list.([]*v1.Deployment)[i] = dep 	// 替换
 			}
 		}
 		return nil
@@ -37,9 +37,9 @@ func(depMap *DeploymentMap) Update(dep *v1.Deployment) error {
 // 删除
 func(depMap *DeploymentMap) Delete(dep *v1.Deployment){
 	if list, ok := depMap.data.Load(dep.Namespace); ok {
-		for i,range_dep := range list.([]*v1.Deployment) {
-			if range_dep.Name==dep.Name{
-				newList:= append(list.([]*v1.Deployment)[:i], list.([]*v1.Deployment)[i+1:]...)
+		for i,rangeDep := range list.([]*v1.Deployment) {
+			if rangeDep.Name == dep.Name{
+				newList := append(list.([]*v1.Deployment)[:i], list.([]*v1.Deployment)[i+1:]...)
 				depMap.data.Store(dep.Namespace,newList)
 				break
 			}
@@ -60,9 +60,11 @@ func init() {
 	DepMap = &DeploymentMap{}
 }
 
+// 回调函数
 type DeploymentHandler struct {
 }
 
+// add回调 加入map中
 func(dh *DeploymentHandler) OnAdd(obj interface{}){
 	DepMap.Add(obj.(*v1.Deployment))
 }
@@ -74,6 +76,7 @@ func(dh *DeploymentHandler) OnUpdate(oldObj, newObj interface{}){
 	}
 }
 
+// delete回调 删除map
 func(dh *DeploymentHandler)	OnDelete(obj interface{}){
 	if d,ok := obj.(*v1.Deployment); ok {
 		DepMap.Delete(d)

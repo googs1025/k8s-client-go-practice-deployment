@@ -1,4 +1,4 @@
-package main
+package test
 
 import (
 	"context"
@@ -6,10 +6,10 @@ import (
 	."k8s-client-go-api-practice/initClient"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"log"
+	"testing"
 )
 
-func main() {
-
+func TestListService(t *testing.T) {
 
 	// 查看版本。
 	fmt.Println(K8sClient.ServerVersion())
