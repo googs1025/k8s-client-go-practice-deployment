@@ -13,17 +13,25 @@ import (
 // RegHandlers 请求的post路由
 func RegHandlers(r *gin.Engine) {
 	// 对副本缩阔容
-	r.POST("/update/deployment/scale", incrReplicas)
+	r.POST("/update/deployment/scale", IncrReplicas)
 	r.POST("/core/deployments", ListAllDeployments)
 	r.POST("/core/pods",ListPodsByDeployment)
 	r.GET("/core/pods_json",GetPODJSON)
 	r.DELETE("/core/pods",DeletePOD)
+	r.POST("/create/deployments",CreateDeploymentHandler)
+}
+
+func CreateDeploymentHandler(c *gin.Context){
+	depReq:=&DeploymentRequest{}
+	util.CheckError(c.ShouldBind(depReq))
+	util.CheckError(CreateDeployment(depReq))
+	c.Redirect(301,"/deployments")
 }
 
 // ListAllDeployment list 传入namespace 结果
 func ListAllDeployments(c *gin.Context) {
 	ns := c.DefaultQuery("namespace", "default")
-	c.JSON(200, gin.H{"message":"ok", "result":ListAllByWatchList(ns)})
+	c.JSON(200, gin.H{"message":"Ok", "result":ListAll(ns)})
 }
 
 //根据 deployment名称 获取 pod列表
@@ -40,7 +48,7 @@ func ListPodsByDeployment(c *gin.Context){
 }
 
 // incrReplicas 扩缩容副本数
-func incrReplicas(c *gin.Context) {
+func IncrReplicas(c *gin.Context) {
 	// request
 	req := struct {
 		Namespace string `json:"ns" binding:"required,min=1"`

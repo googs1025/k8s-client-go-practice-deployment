@@ -50,6 +50,7 @@ func GetDeployment(namespace string, name string) *Deployment {
 		NameSpace: depDetail.Namespace,
 		Images: GetImages(*depDetail),
 		CreateTime: depDetail.CreationTimestamp.Format("2006-01-02 15:03:04"),
-		Pods: GetPodsByDep(namespace, depDetail),
+		//Pods: GetPodsByDep(namespace, depDetail),
+		Replicas:[3]int32{depDetail.Status.Replicas,depDetail.Status.AvailableReplicas,depDetail.Status.UnavailableReplicas},
 	}
 }
