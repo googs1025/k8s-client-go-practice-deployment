@@ -59,6 +59,17 @@ func(depMap *DeploymentMap) ListDeploymentByNamespace(ns string) ([]*v1.Deployme
 	return nil, fmt.Errorf("record not found")
 }
 
+func(depMap *DeploymentMap) GetDeployment(ns string,depname string) (*v1.Deployment,error){
+	if list,ok:=depMap.data.Load(ns);ok {
+		for _,item:=range list.([]*v1.Deployment){
+			if item.Name==depname{
+				return item,nil
+			}
+		}
+	}
+	return nil,fmt.Errorf("record not found")
+}
+
 var DepMap *DeploymentMap  //作为全局对象
 func init() {
 	DepMap = &DeploymentMap{}
@@ -69,10 +80,18 @@ func init() {
 func InitDeployment(){
 	// 创建SharedInformerFactory
 	fact:=informers.NewSharedInformerFactory(initClient.K8sClient, 0)
-	//
+	// 加入所有资源的informer
 	depInformer := fact.Apps().V1().Deployments()
-
 	depInformer.Informer().AddEventHandler(&DeploymentHandler{})
+
+	podInformer := fact.Core().V1().Pods()
+	podInformer.Informer().AddEventHandler(&PodHandler{})
+
+	rsInformer := fact.Apps().V1().ReplicaSets()
+	rsInformer.Informer().AddEventHandler(&RsHandler{})
+
+	eventInformer := fact.Core().V1().Events()
+	eventInformer.Informer().AddEventHandler(&EventHandler{})
 
 	fact.Start(wait.NeverStop)
 

@@ -26,6 +26,19 @@ func ListAllDeployments(c *gin.Context) {
 	c.JSON(200, gin.H{"message":"ok", "result":ListAllByWatchList(ns)})
 }
 
+//根据 deployment名称 获取 pod列表
+func ListPodsByDeployment(c *gin.Context){
+	ns:=c.DefaultQuery("namespace","default")
+	depname:=c.DefaultQuery("deployment","default")
+	dep,err:=core.DepMap.GetDeployment(ns,depname)
+	util.CheckError(err)
+	rslist,err:=core.RsMap.ListByNameSpace(ns)  // 根据namespace 取到 所有rs
+	util.CheckError(err)
+	labels,err:=GetRsLableByDeployment_ListWatch(dep,rslist) //根据deployment过滤出 rs，然后直接获取标签
+	util.CheckError(err)
+	c.JSON(200,gin.H{"message":"Ok","result":ListPodsByLabel(ns,labels)})
+}
+
 // incrReplicas 扩缩容副本数
 func incrReplicas(c *gin.Context) {
 	// request
@@ -75,7 +88,7 @@ func GetPODJSON(c *gin.Context){
 		panic("error ns or pod")
 	}
 	if pod:=core.PodMap.Get(ns,podName);pod==nil{
-		panic("no such pod "+podName)
+		panic("no such pod " + podName)
 	}else{
 		c.JSON(200,pod)
 	}

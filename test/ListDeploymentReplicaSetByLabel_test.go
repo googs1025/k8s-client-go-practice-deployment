@@ -7,7 +7,13 @@ import (
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"log"
 	v12 "k8s.io/api/apps/v1"
+	"testing"
 )
+
+func TestListDeploymentBySelector(t *testing.T) {
+	res := ListDeploymentBySelector("default", "webapp")
+	fmt.Println(res)
+}
 
 func ListDeploymentBySelector(namespace string, deploymentName string) string {
 
@@ -28,13 +34,13 @@ func ListDeploymentBySelector(namespace string, deploymentName string) string {
 	}
 	// 再用ReplicaSets 查一变
 	rs, err := initClient.K8sClient.AppsV1().ReplicaSets(namespace).List(ctx, listOpt)
-	fmt.Println(deployment.ObjectMeta.Annotations["deployment.kubernetes.io/revision"])	// 需要比对到最新的。
+	fmt.Println("deployment.kubernetes.io/revision:",deployment.ObjectMeta.Annotations["deployment.kubernetes.io/revision"])	// 需要比对到最新的。
 
 	for _, item := range rs.Items {
 		// 打印name
-		log.Println(item.Name)
-		// 打印上层引用对象
-		log.Println(item.OwnerReferences)
+		log.Println("rs name: ", item.Name)
+		// 打印上层引用对象(数组)
+		log.Println("OwnerReferences:", item.OwnerReferences)
 		fmt.Println(IsCurrentRs(deployment, item))
 
 		// 打印selector标签

@@ -24,7 +24,12 @@ body, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, code, form, fieldset,
     padding: 0;
 }
 .outbox{margin:0 auto;text-align: center;width:100%}
-.table{margin: 0 auto}
+.table{margin: 0 auto; }
 .is-border{font-weight: bold}
 .is-red{color: darkred}
-.is.green{color: green}
+.is-green{color:green}
+.is-gray{color:gray}
+.text-left{text-align: left}
+.active{ color:green;font-weight: bold}
+.unactive{color: darkred;font-weight: bold}
+.button.is-btn{width:20px!important;font-size:.85rem!important;padding: 0!important;}

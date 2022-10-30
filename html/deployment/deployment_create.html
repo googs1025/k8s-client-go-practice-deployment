@@ -1,0 +1,32 @@
+
+<div class="outbox">
+    {{template "header" .}}
+    <form method="post"  >
+    <nav class="panel"  >
+        <p class="panel-heading">
+            基本信息(namespace目前固定在default里)
+        </p>
+    <div class="table-container is-centered" style="margin:0 auto">
+        <table class="table"  style="width: 500px">
+
+            <tbody id="dep">
+                <tr>
+                    <td>名称</td>
+                    <td><input name="name" type="text" class="input"/></td>
+                </tr>
+                <tr>
+                    <td>镜像</td>
+                    <td><input name="image" type="text" class="input"/></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    </nav>
+
+    <nav  class="panel">
+        <button class="button" type="submit" >确认</button>
+    </nav>
+    </form>
+</div>
+
+{{template "footer" .}}

@@ -133,5 +133,62 @@ func ListDeploymentBySelector(namespace string, deploymentName string) {
 }
 
 
+//根据dep 获取 所有rs的标签  --- 给listwatch使用
+func GetRsLableByDeployment_ListWatch(dep *v1.Deployment,rslist []*v1.ReplicaSet) ([]map[string]string,error){
+
+	ret:=make([]map[string]string,0)
+	for _,item:=range rslist{
+		if IsRsFromDep(dep,*item){
+			s,err:= v12.LabelSelectorAsMap(item.Spec.Selector)
+			if err!=nil{
+				return nil,err
+			}
+			ret=append(ret,s)
+		}
+	}
+	return ret,nil
+
+}
+//根据dep 获取 当前rs的标签 ---普通调用API
+func GetRsLableByDeployment(dep *v1.Deployment) string{
+	selector,_:=  v12.LabelSelectorAsSelector(dep.Spec.Selector)
+	listOpt:=v12.ListOptions{
+		LabelSelector:selector.String(),
+	}
+	rs,_:=initClient.K8sClient.AppsV1().ReplicaSets(dep.Namespace).
+		List(context.Background(),listOpt)
+	for _,item:=range rs.Items{
+		if IsCurrentRsByDep(dep,item){
+			s,err:= v12.LabelSelectorAsSelector(item.Spec.Selector)
+			if err!=nil{
+				return ""
+			}
+			return s.String()
+		}
+	}
+	return ""
+}
+
+//判断 rs 是否属于 某个 dep
+func IsRsFromDep(dep *v1.Deployment,set v1.ReplicaSet) bool{
+	for _,ref:=range set.OwnerReferences{
+		if ref.Kind=="Deployment" && ref.Name==dep.Name{
+			return true
+		}
+	}
+	return false
+}
+
+//判断当前 的rs 是否是最新的
+func IsCurrentRsByDep(dep *v1.Deployment,set v1.ReplicaSet) bool{
+	if set.ObjectMeta.Annotations["deployment.kubernetes.io/revision"]!=dep.ObjectMeta.Annotations["deployment.kubernetes.io/revision"]{
+		return false
+	}
+	return  IsRsFromDep(dep,set)
+
+}
+
+
+
 
 

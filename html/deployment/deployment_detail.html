@@ -33,8 +33,8 @@
                         dataType: "json",
                         success: function(data){
                             if(data.message==="Ok"){
-                                alert("操作成功")
-                                self.location.reload()
+                               // alert("操作成功")
+
                             }
                         },
                         error:function (data) {
@@ -57,27 +57,106 @@
                 Pods信息
             </p>
             <div class="table-container">
+                <p class="is-left text-left">
+                    <button id="cmdDelPod" class="button">删除POD</button>
+                </p>
+                <script>
+                    $("#cmdDelPod").click(function(){
+                        $(".pods").each(function () {
+                            if($(this).prop("checked")){
+                                url="/core/pods?namespace=" + $(this).attr("ns") + "&pod=" + $(this).attr("pod")
+                                $.ajax({
+                                    type: "DELETE",
+                                    url: "/core/pods?namespace=" + $(this).attr("ns") + "&pod=" + $(this).attr("pod"),
+                                    dataType: "json",
+                                })
+                            }
+
+
+                        })
+                    })
+                </script>
              <table class="table"  >
                 <thead>
-                <th width="50%">名称</th>
+                <th width="5%"></th>
+                <th width="5%">阶段</th>
+                <th width="5%">状态</th>
+                <th width="40%">名称</th>
                 <th>镜像</th>
                 <th>主机</th>
                 <th>创建时间</th>
+                <th></th>
                 </thead>
-                <tbody>
-                {{range .Data.DepDetail.Pods}}
+                <tbody id="podlist">
                     <tr>
-                        <td>{{.Name}}</td>
-                        <td>{{.Images}}</td>
-                        <td>{{.NodeName}}</td>
-                        <td>{{.CreateTime}}</td>
+                        <td><input class="pods"  ns="${NameSpace}"  pod="${Name}" type="checkbox"/></td>
+                        <td>${Phase}</td>
+                        <td class="status">${Status}</td>
+                        <td>${Name}
+                           <p class="is-red">${Message}</p>
+                        </td>
+                        <td>${Images}
+                            <p class="is-gray">${IP[0]}</p>
+                        </td>
+                        <td>${NodeName}
+                            <p class="is-gray">${IP[1]}</p>
+                        </td>
+                        <td>${CreateTime} </td>
+                        <td>
+                            <a target="_blank" href="/core/pods_json?ns=${NameSpace}&pod=${Name}">查看JSON</a>
+                        </td>
                     </tr>
-                {{end}}
+
                 </tbody>
             </table>
             </div>
         </nav>
-
+            <script>
+                let orgData=""
+                let tmpl=$("#podlist").html()
+                $("#podlist").html("");
+                $.template( "pods", tmpl );
+                const ns=$("#ns").attr("v")
+                const dep=$("#deployment").attr("v")
+                function loadPods() {
+                    $.ajax({
+                        type: "POST",
+                        url: "/core/pods?namespace="+ns+"&deployment="+dep,
+                        dataType: "json",
+                        success: function (data) {
+                            if (data.message === "Ok") {
+                                let tmpMd5=md5(JSON.stringify(data.result))
+                                if(tmpMd5!==orgData){
+                                    $("#podlist").html("");
+                                    let pods=data.result ;// pods列表
+                                    pods.forEach((pod)=>{
+                                        if(pod.IsReady && pod.Phase==="Running"){
+                                            pod.Status="Active"
+                                            pod.Message=""
+                                        }
+                                        else
+                                            pod.Status="Waiting"
+                                    })
+                                    $.tmpl("pods", pods )
+                                        .appendTo( "#podlist" );
+                                    orgData=tmpMd5
+                                    $(".status").each(function(){
+                                        if($(this).html()==="Active")
+                                            $(this).attr("class","active")
+                                        else
+                                            $(this).attr("class","unactive")
+                                    })
+                                }
+                            }
+                        },
+                        error: function (data) {
+                            alert(data.responseJSON.error)
+                        }
+                    })
+                }
+                loadPods()
+                window.setInterval("loadPods()",800)
+            </script>
     </div>
 
 </div>
