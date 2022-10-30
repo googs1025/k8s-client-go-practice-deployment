@@ -37,9 +37,9 @@ func incrReplicas(c *gin.Context) {
 	scale, err := initClient.K8sClient.AppsV1().Deployments(req.Namespace).
 		GetScale(ctx,req.Deployment,v1.GetOptions{})
 	util.CheckError(err)
-	if req.Dec{ //dec==true代表是减少副本数
+	if req.Dec { //dec==true代表是减少副本数
 		scale.Spec.Replicas--
-	}else{
+	} else {
 		scale.Spec.Replicas++
 	}
 

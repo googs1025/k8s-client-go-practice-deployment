@@ -6,9 +6,12 @@ import (
 	v1 "k8s.io/api/apps/v1"
 	"k8s.io/apimachinery/pkg/util/wait"
 	"k8s.io/client-go/informers"
-	"log"
 	"sync"
 )
+
+/*
+	可以先去test/ListWatch_test.go 查看test方法。
+ */
 
 type DeploymentMap struct {
 	data sync.Map  // [key string] []*v1.Deployment    key=>namespace
@@ -49,6 +52,7 @@ func(depMap *DeploymentMap) Delete(dep *v1.Deployment){
 
 
 func(depMap *DeploymentMap) ListDeploymentByNamespace(ns string) ([]*v1.Deployment,error){
+	// 从map中拿出对应namespace的 deploymentList
 	if list,ok := depMap.data.Load(ns); ok {
 		return  list.([]*v1.Deployment), nil
 	}
@@ -60,39 +64,16 @@ func init() {
 	DepMap = &DeploymentMap{}
 }
 
-// 回调函数
-type DeploymentHandler struct {
-}
-
-// add回调 加入map中
-func(dh *DeploymentHandler) OnAdd(obj interface{}){
-	DepMap.Add(obj.(*v1.Deployment))
-}
-
-func(dh *DeploymentHandler) OnUpdate(oldObj, newObj interface{}){
-	err := DepMap.Update(newObj.(*v1.Deployment))
-	if err != nil {
-		log.Println(err)
-	}
-}
-
-// delete回调 删除map
-func(dh *DeploymentHandler)	OnDelete(obj interface{}){
-	if d,ok := obj.(*v1.Deployment); ok {
-		DepMap.Delete(d)
-	}
-}
 
 // InitDeployment 初始化调用监听deployment事件
 func InitDeployment(){
-
+	// 创建SharedInformerFactory
 	fact:=informers.NewSharedInformerFactory(initClient.K8sClient, 0)
-
-	depInformer:=fact.Apps().V1().Deployments()
+	//
+	depInformer := fact.Apps().V1().Deployments()
 
 	depInformer.Informer().AddEventHandler(&DeploymentHandler{})
 
 	fact.Start(wait.NeverStop)
-
 
 }

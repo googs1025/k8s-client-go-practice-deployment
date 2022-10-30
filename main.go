@@ -13,7 +13,7 @@ func main() {
 
 	r.Use(func(c *gin.Context) {
 		defer func() {
-			if e:=recover();e != nil {
+			if e := recover();e != nil {
 				c.AbortWithStatusJSON(400,gin.H{"error":e})
 			}
 		}()

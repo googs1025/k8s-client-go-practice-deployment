@@ -77,6 +77,13 @@ func TestInformerListWatch(t *testing.T) {
 	// 可以增加多个资源的handler
 	deploymentInformer.Informer().AddEventHandler(&DeploymentHandler{})
 
+	// 可以同时监听多个资源：
+	// ex:
+	// podInformer := fact.Core().V1().Pods()
+	// podInformer.Informer().AddEventHandler()
+	// serviceInformer := fact.Core().V1().Services()
+	// serviceInformer.Informer().AddEventHandler()
+
 	fact.Start(wait.NeverStop)
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
@@ -111,7 +118,7 @@ func TestInformerListWatch(t *testing.T) {
 
 }
 
-func UseInformerWatchDeployment() {
+func TestInformerWatchDeployment(t *testing.T) {
 	// 一种方式：建立一个watch的informer
 	s, c := cache.NewInformer(
 		cache.NewListWatchFromClient(initClient.K8sClient.AppsV1().RESTClient(),
@@ -123,4 +130,6 @@ func UseInformerWatchDeployment() {
 
 	c.Run(wait.NeverStop)
 	s.List()
+
+	select {}
 }

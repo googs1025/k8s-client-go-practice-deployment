@@ -11,6 +11,7 @@ import (
 //
 func GetPodsByDep(namespace string, dep *v1.Deployment) []*Pod {
 	ctx := context.Background()
+	// 由label找到deployment
 	//listOpt := metav1.ListOptions{
 	//	LabelSelector: GetLabels(dep.Spec.Selector.MatchLabels),
 	//}
@@ -48,7 +49,7 @@ func GetDeployment(namespace string, name string) *Deployment {
 		Name: depDetail.Name,
 		NameSpace: depDetail.Namespace,
 		Images: GetImages(*depDetail),
-		CreateTime:depDetail.CreationTimestamp.Format("2006-01-02 15:03:04"),
-		Pods:GetPodsByDep(namespace, depDetail),
+		CreateTime: depDetail.CreationTimestamp.Format("2006-01-02 15:03:04"),
+		Pods: GetPodsByDep(namespace, depDetail),
 	}
 }
