@@ -3,6 +3,7 @@ package deployment
 import (
 	"context"
 	"github.com/gin-gonic/gin"
+	"k8s-client-go-api-practice/core"
 	"k8s-client-go-api-practice/initClient"
 	"k8s-client-go-api-practice/util"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -13,11 +14,14 @@ import (
 func RegHandlers(r *gin.Engine) {
 	// 对副本缩阔容
 	r.POST("/update/deployment/scale", incrReplicas)
-	r.POST("/core/deployments", ListAllDeployment)
+	r.POST("/core/deployments", ListAllDeployments)
+	r.POST("/core/pods",ListPodsByDeployment)
+	r.GET("/core/pods_json",GetPODJSON)
+	r.DELETE("/core/pods",DeletePOD)
 }
 
 // ListAllDeployment list 传入namespace 结果
-func ListAllDeployment(c *gin.Context) {
+func ListAllDeployments(c *gin.Context) {
 	ns := c.DefaultQuery("namespace", "default")
 	c.JSON(200, gin.H{"message":"ok", "result":ListAllByWatchList(ns)})
 }
@@ -48,4 +52,32 @@ func incrReplicas(c *gin.Context) {
 		UpdateScale(ctx,req.Deployment,scale,v1.UpdateOptions{})
 	util.CheckError(err)
 	util.Sunccess("Ok",c)
+}
+
+//删除POD
+func DeletePOD(c *gin.Context){
+	ns:=c.DefaultQuery("namespace","default")
+	podName:=c.DefaultQuery("pod","")
+	if podName=="" || ns==""{
+		panic("error ns or pod")
+	}
+	util.CheckError(DeletePod(ns,podName))
+	c.JSON(200,gin.H{"message":"Ok"})
+
+}
+
+
+//获取POD的JSON详细内容
+func GetPODJSON(c *gin.Context){
+	ns:=c.DefaultQuery("namespace","default")
+	podName:=c.DefaultQuery("pod","")
+	if podName=="" || ns==""{
+		panic("error ns or pod")
+	}
+	if pod:=core.PodMap.Get(ns,podName);pod==nil{
+		panic("no such pod "+podName)
+	}else{
+		c.JSON(200,pod)
+	}
+
 }

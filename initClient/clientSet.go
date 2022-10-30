@@ -3,6 +3,7 @@ package initClient
 import (
 	"flag"
 	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 	"log"
 	"os"
@@ -31,19 +32,11 @@ import (
 var K8sClient *kubernetes.Clientset
 
 func init() {
-	var kubeConfig *string
 
-	if home := HomeDir(); home != "" {
-		kubeConfig = flag.String("kubeconfig", filepath.Join(home, ".kube", "config"), "")
-	} else {
-		kubeConfig = flag.String("kubeconfig", "", "")
-	}
-	flag.Parse()
+	// 两个选一个用
+	//config := kubeConfig()
+	config := kubeProxyConfig()
 
-	config, err := clientcmd.BuildConfigFromFlags("", *kubeConfig)
-	if err != nil {
-		log.Panic(err.Error())
-	}
 
 	clientSet, err := kubernetes.NewForConfig(config)
 	if err != nil {
@@ -59,4 +52,30 @@ func HomeDir() string {
 
 	return os.Getenv("USERPROFILE")
 
+}
+
+func kubeConfig() *rest.Config {
+	// 法一：直接在k8s上运行的代码
+	var kubeConfig *string
+
+	if home := HomeDir(); home != "" {
+		kubeConfig = flag.String("kubeconfig", filepath.Join(home, ".kube", "config"), "")
+	} else {
+		kubeConfig = flag.String("kubeconfig", "", "")
+	}
+	flag.Parse()
+
+	config, err := clientcmd.BuildConfigFromFlags("", *kubeConfig)
+	if err != nil {
+		log.Panic(err.Error())
+	}
+	return config
+}
+
+func kubeProxyConfig() *rest.Config {
+	// 法二：需要用端口转换 kubectl proxy --address="0.0.0.0" --accept-hosts='^*$' --port=8009
+	config := &rest.Config{
+		Host: "http://1.14.120.233:8009",
+	}
+	return config
 }

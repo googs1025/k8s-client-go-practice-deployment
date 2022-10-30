@@ -13,7 +13,8 @@ func ListDeploymentBySelector(namespace string, deploymentName string) string {
 
 	ctx := context.Background()
 	// 先找到特定label
-	deployment, err := initClient.K8sClient.AppsV1().Deployments(namespace).Get(ctx, deploymentName, v1.GetOptions{})
+	deployment, err := initClient.K8sClient.AppsV1().Deployments(namespace).
+		Get(ctx, deploymentName, v1.GetOptions{})
 	if err != nil {
 		log.Fatal(err)
 	}
