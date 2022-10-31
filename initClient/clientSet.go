@@ -54,6 +54,7 @@ func HomeDir() string {
 
 }
 
+// kubeConfig 集权中执行
 func kubeConfig() *rest.Config {
 	// 法一：直接在k8s上运行的代码
 	var kubeConfig *string
@@ -72,6 +73,7 @@ func kubeConfig() *rest.Config {
 	return config
 }
 
+// kubeProxyConfig 利用端口转发，可以在本地执行。
 func kubeProxyConfig() *rest.Config {
 	// 法二：需要用端口转换 kubectl proxy --address="0.0.0.0" --accept-hosts='^*$' --port=8009
 	config := &rest.Config{

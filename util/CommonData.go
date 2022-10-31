@@ -4,6 +4,7 @@ import "reflect"
 
 // 用于前端渲染用
 
+
 func DataBuilder() *CommonDataStruct{
 	return NewCommonDataStruct()
 }

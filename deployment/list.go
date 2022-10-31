@@ -26,7 +26,7 @@ import (
 // ListAllByWatchList 使用watch-list方法来list deployment
 // 只有在初始化才会全量list，后面开始监听deployment，有event才会通知。
 // ListAll ListAllByWatchList
-func ListAll(namespace string) (ret []*Deployment) {
+func ListAllByWatchList(namespace string) (ret []*Deployment) {
 
 	deploymentList, err := core.DepMap.ListDeploymentByNamespace(namespace)
 	util.CheckError(err)

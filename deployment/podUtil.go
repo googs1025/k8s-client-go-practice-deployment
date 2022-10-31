@@ -24,7 +24,8 @@ func GetPodIsReady(pod v1.Pod)  bool {
 	return true
 }
 
-func DeletePod(ns string,podName string) error {
+// DeletePod 删除pod
+func DeletePod(ns string, podName string) error {
 	return initClient.K8sClient.CoreV1().Pods(ns).
-		Delete(context.Background(),podName,v12.DeleteOptions{})
+		Delete(context.Background(), podName, v12.DeleteOptions{})
 }

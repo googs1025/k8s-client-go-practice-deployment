@@ -7,9 +7,9 @@ import (
 
 func RegHandlers(r *gin.Engine){
 	r.GET("/debug/pods",ListAllPODS)
-
 }
-//列出所有PODS
+
+// 列出所有PODS
 func ListAllPODS(c *gin.Context){
 	ns:=c.DefaultQuery("namespace","default")
 

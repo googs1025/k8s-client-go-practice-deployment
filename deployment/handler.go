@@ -22,29 +22,36 @@ func RegHandlers(r *gin.Engine) {
 }
 
 func CreateDeploymentHandler(c *gin.Context){
-	depReq:=&DeploymentRequest{}
+	depReq := &DeploymentRequest{}
+
 	util.CheckError(c.ShouldBind(depReq))
 	util.CheckError(CreateDeployment(depReq))
+
 	c.Redirect(301,"/deployments")
 }
 
 // ListAllDeployment list 传入namespace 结果
 func ListAllDeployments(c *gin.Context) {
 	ns := c.DefaultQuery("namespace", "default")
-	c.JSON(200, gin.H{"message":"Ok", "result":ListAll(ns)})
+	c.JSON(200, gin.H{"message":"Ok", "result": ListAllByWatchList(ns)})
 }
 
-//根据 deployment名称 获取 pod列表
+// ListPodsByDeployment 根据 deployment名称 获取 pod列表
 func ListPodsByDeployment(c *gin.Context){
-	ns:=c.DefaultQuery("namespace","default")
-	depname:=c.DefaultQuery("deployment","default")
-	dep,err:=core.DepMap.GetDeployment(ns,depname)
+	// 取得请求参数
+	ns := c.DefaultQuery("namespace","default")
+	depName := c.DefaultQuery("deployment","default")
+
+	dep, err := core.DepMap.GetDeployment(ns, depName)
 	util.CheckError(err)
-	rslist,err:=core.RsMap.ListByNameSpace(ns)  // 根据namespace 取到 所有rs
+
+	rsList,err:=core.RsMap.ListByNameSpace(ns)  // 根据namespace 取到 所有rs
 	util.CheckError(err)
-	labels,err:=GetRsLableByDeployment_ListWatch(dep,rslist) //根据deployment过滤出 rs，然后直接获取标签
+
+	labels, err:=GetRsLableByDeployment_ListWatch(dep, rsList) //根据deployment过滤出 rs，然后直接获取标签
 	util.CheckError(err)
-	c.JSON(200,gin.H{"message":"Ok","result":ListPodsByLabel(ns,labels)})
+
+	c.JSON(200,gin.H{"message":"Ok","result": ListPodsByLabel(ns,labels)})
 }
 
 // incrReplicas 扩缩容副本数

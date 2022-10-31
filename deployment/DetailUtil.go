@@ -8,7 +8,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-//
+
 func GetPodsByDep(namespace string, dep *v1.Deployment) []*Pod {
 	ctx := context.Background()
 	// 由label找到deployment

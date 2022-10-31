@@ -11,9 +11,9 @@ import (
 
 func main() {
 
-
 	r := gin.New()
 
+	// 中间件
 	r.Use(func(c *gin.Context) {
 		defer func() {
 			if e := recover(); e != nil {
@@ -23,6 +23,7 @@ func main() {
 		c.Next()
 	})
 
+	// 加入handler路由
 	deployment.RegHandlers(r)
 	debug.RegHandlers(r)
 
