@@ -46,20 +46,20 @@ func ListAllByWatchList(namespace string) (ret []*Deployment) {
 }
 
 //这里的函数好比 DTO . 把原生的 deployment 或pod转换为  自己的 实体对象
-func ListPodsByLabel(ns string,labels []map[string]string) (ret []*Pod){
+func ListPodsByLabel(ns string, labels []map[string]string) (ret []*Pod){
 	podList,err :=core.PodMap.ListByLabels(ns,labels)
 	util.CheckError(err)
-	for _,pod:=range podList{
-		ret=append(ret,&Pod{
-			Name:pod.Name,
-			NameSpace:pod.Namespace,
-			Images:GetImagesByPod(pod.Spec.Containers),
-			NodeName:pod.Spec.NodeName,
-			Phase:string(pod.Status.Phase),// 阶段
-			IsReady:GetPodIsReady(*pod), //是否就绪
-			IP:[]string{pod.Status.PodIP,pod.Status.HostIP},
-			Message:core.EventMap.GetMessage(pod.Namespace,"Pod",pod.Name),
-			CreateTime:pod.CreationTimestamp.Format("2006-01-02 15:04:05"),
+	for _, pod := range podList {
+		ret = append(ret, &Pod{
+			Name: pod.Name,
+			NameSpace: pod.Namespace,
+			Images: GetImagesByPod(pod.Spec.Containers),
+			NodeName: pod.Spec.NodeName,
+			Phase: string(pod.Status.Phase),// 阶段
+			IsReady: GetPodIsReady(*pod), //是否就绪
+			IP: []string{pod.Status.PodIP,pod.Status.HostIP},
+			Message: core.EventMap.GetMessage(pod.Namespace,"Pod",pod.Name),
+			CreateTime: pod.CreationTimestamp.Format("2006-01-02 15:04:05"),
 		})
 	}
 	return

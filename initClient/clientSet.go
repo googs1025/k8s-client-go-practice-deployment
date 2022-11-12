@@ -34,8 +34,8 @@ var K8sClient *kubernetes.Clientset
 func init() {
 
 	// 两个选一个用
-	//config := kubeConfig()
-	config := kubeProxyConfig()
+	config := kubeConfig()
+	//config := kubeProxyConfig()
 
 
 	clientSet, err := kubernetes.NewForConfig(config)
@@ -64,7 +64,7 @@ func kubeConfig() *rest.Config {
 	} else {
 		kubeConfig = flag.String("kubeconfig", "", "")
 	}
-	flag.Parse()
+	//flag.Parse()
 
 	config, err := clientcmd.BuildConfigFromFlags("", *kubeConfig)
 	if err != nil {

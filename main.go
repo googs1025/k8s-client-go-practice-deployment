@@ -34,7 +34,7 @@ func main() {
 		c.HTML(http.StatusOK, "deployment_list.html",
 			util.DataBuilder().
 			SetTitle("deployment列表").
-			SetData("DepList",deployment.ListAll("default")))
+			SetData("DepList",deployment.ListAllByWatchList("default")))
 		//c.JSON(200, deployment.ListAll("default"))
 	})
 	r.GET("/deployments/:name", func(c *gin.Context) {
