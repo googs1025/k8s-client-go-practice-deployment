@@ -84,12 +84,12 @@ func IncrReplicas(c *gin.Context) {
 
 //删除POD
 func DeletePOD(c *gin.Context){
-	ns:=c.DefaultQuery("namespace","default")
-	podName:=c.DefaultQuery("pod","")
-	if podName=="" || ns==""{
+	ns := c.DefaultQuery("namespace","default")
+	podName := c.DefaultQuery("pod","")
+	if podName == "" || ns == "" {
 		panic("error ns or pod")
 	}
-	util.CheckError(DeletePod(ns,podName))
+	util.CheckError(DeletePod(ns, podName))
 	c.JSON(200,gin.H{"message":"Ok"})
 
 }
@@ -97,15 +97,17 @@ func DeletePOD(c *gin.Context){
 
 //获取POD的JSON详细内容
 func GetPODJSON(c *gin.Context){
-	ns:=c.DefaultQuery("namespace","default")
-	podName:=c.DefaultQuery("pod","")
-	if podName=="" || ns==""{
+	// 传入参数
+	ns := c.DefaultQuery("namespace","default")
+	podName := c.DefaultQuery("pod","")
+	if podName == "" || ns == "" {
 		panic("error ns or pod")
 	}
-	if pod:=core.PodMap.Get(ns,podName);pod==nil{
+	// 用list-watch机制，存到内存里的数据
+	if pod := core.PodMap.Get(ns,podName); pod == nil {
 		panic("no such pod " + podName)
-	}else{
-		c.JSON(200,pod)
+	} else {
+ 		c.JSON(200,pod)
 	}
 
 }

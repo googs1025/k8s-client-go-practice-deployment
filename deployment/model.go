@@ -5,6 +5,8 @@ type Deployment struct {
 	NameSpace string
 	Replicas [3]int32
 	Images string
+	IsComplete bool // 是否完成
+	Message string
 	CreateTime string
 	Pods []*Pod
 }

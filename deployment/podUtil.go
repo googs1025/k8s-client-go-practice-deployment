@@ -8,15 +8,18 @@ import (
 )
 
 //判断POD是否就绪
-func GetPodIsReady(pod v1.Pod)  bool {
-	for _,condition:=range pod.Status.Conditions{
-		if condition.Type=="ContainersReady" && condition.Status!="True"{
+func GetPodIsReady(pod v1.Pod) bool {
+
+	for _, condition := range pod.Status.Conditions{
+		// 如果不是true，直接判断不相等
+
+		if condition.Type == "ContainersReady" && condition.Status != "True" {
 			return false
 		}
 	}
-	for _,rg:=range pod.Spec.ReadinessGates{
-		for _,condition:=range pod.Status.Conditions{
-			if condition.Type==rg.ConditionType && condition.Status!="True"{
+	for _, rg := range pod.Spec.ReadinessGates {
+		for _, condition := range pod.Status.Conditions {
+			if condition.Type == rg.ConditionType && condition.Status != "True" {
 				return false
 			}
 		}

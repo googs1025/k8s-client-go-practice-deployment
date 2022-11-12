@@ -28,8 +28,12 @@
             <tbody id="dep">
             <tr>
                 <td><input type="checkbox"/></td>
-                <td> - </td>
-                <td><a href="/deployments/${Name}">${Name}</a></td>
+                <td> ${Status} </td>
+                <td><a href="/deployments/${Name}">${Name}</a>
+                <p class="is-red">
+                    ${Message}
+                </p>
+                </td>
                 <td>${Images}</td>
                 <td class="is-border"> <span  >${Replicas[0]}</span>
                     / <span class="is-green">${Replicas[1]}</span>
@@ -50,6 +54,15 @@
                 success: function (data) {
                     if (data.message === "Ok") {
                         $("#dep").html("");
+                        let deps=data.result;
+                        deps.forEach((item)=>{
+                            if (item.IsComplete){
+                                item.Status="Active"
+                                item.Message=""
+                            }else{
+                                item.Status="Waiting"
+                            }
+                        })
                         $.tmpl("deployments", data.result )
                             .appendTo( "#dep" );
                     }

@@ -30,21 +30,39 @@ func genLabels(req *DeploymentRequest) map[string]string {
 	}
 }
 
+// 判断deployment是否完成
+func GetDeploymentIsComplete(deployment *v1.Deployment) bool {
+	return deployment.Status.Replicas == deployment.Status.AvailableReplicas
+}
+
+// 判断deployment失败状态
+func GetDeploymentCondition(deployment *v1.Deployment) string {
+	for _, item := range deployment.Status.Conditions {
+		if item.Type == "Available" && item.Status != "True" {
+			return item.Message // 返回里面的message
+		}
+	}
+	return ""
+}
+
 func CreateDeployment(req *DeploymentRequest) error {
 	ns := "default"
 	_, err := initClient.K8sClient.AppsV1().Deployments(ns).
 		Create(context.Background(), &v1.Deployment {
-			ObjectMeta: metav1.ObjectMeta{Name: req.Name,Namespace: ns},
+			ObjectMeta: metav1.ObjectMeta{
+				Name: req.Name,
+				Namespace: ns,
+			},
 			Spec: v1.DeploymentSpec{
 				Selector: &metav1.LabelSelector{
 					MatchLabels: genLabels(req),
 				},
 				Template:corev1.PodTemplateSpec{
 					ObjectMeta:metav1.ObjectMeta{
-						Labels:genLabels(req),
+						Labels: genLabels(req),
 					},
 					Spec:corev1.PodSpec{
-						Containers:genContainers(req),
+						Containers: genContainers(req),
 					},
 				},
 			},

@@ -138,14 +138,14 @@ func ListDeploymentBySelector(namespace string, deploymentName string) {
 
 
 //根据dep 获取 所有rs的标签  --- 给listwatch使用
-func GetRsLableByDeployment_ListWatch(dep *v1.Deployment,rslist []*v1.ReplicaSet) ([]map[string]string,error){
+func GetRsLableByDeployment_ListWatch(dep *v1.Deployment,rslist []*v1.ReplicaSet) ([]map[string]string, error){
 
 	ret := make([]map[string]string, 0)
 	for _, item := range rslist{
 		if IsRsFromDep(dep, *item) {
-			s,err := v12.LabelSelectorAsMap(item.Spec.Selector)
+			s, err := v12.LabelSelectorAsMap(item.Spec.Selector)
 			if err != nil{
-				return nil,err
+				return nil, err
 			}
 			ret = append(ret, s)
 		}

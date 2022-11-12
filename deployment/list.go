@@ -39,6 +39,9 @@ func ListAllByWatchList(namespace string) (ret []*Deployment) {
 				deployment.Status.UnavailableReplicas,
 			},
 			Images: GetImages(*deployment),
+			IsComplete: GetDeploymentIsComplete(deployment),
+			//Message: core.EventMap.GetMessage(deployment.Namespace, "Deployment", deployment.Name),
+			Message: GetDeploymentCondition(deployment),
 		})
 	}
 	return
@@ -58,7 +61,7 @@ func ListPodsByLabel(ns string, labels []map[string]string) (ret []*Pod){
 			Phase: string(pod.Status.Phase),// 阶段
 			IsReady: GetPodIsReady(*pod), //是否就绪
 			IP: []string{pod.Status.PodIP,pod.Status.HostIP},
-			Message: core.EventMap.GetMessage(pod.Namespace,"Pod",pod.Name),
+			Message: core.EventMap.GetMessage(pod.Namespace,"Pod", pod.Name),
 			CreateTime: pod.CreationTimestamp.Format("2006-01-02 15:04:05"),
 		})
 	}
