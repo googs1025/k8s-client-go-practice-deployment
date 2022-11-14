@@ -1,5 +1,7 @@
 package deployment
 
+// 模型
+
 type Deployment struct {
 	Name string
 	NameSpace string

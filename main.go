@@ -50,7 +50,7 @@ func main() {
 				SetTitle("deployment创建"))
 	})
 
-	core.InitDeployment() //初始化第一批deployment list
+	core.InitResourceInformer() //初始化第一批deployment list
 	_ = r.Run(":8080")
 
 }

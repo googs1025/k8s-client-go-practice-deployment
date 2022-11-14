@@ -13,6 +13,6 @@ func RegHandlers(r *gin.Engine){
 func ListAllPODS(c *gin.Context){
 	ns:=c.DefaultQuery("namespace","default")
 
-	c.JSON(200,gin.H{"message":"Ok","result":	core.PodMap.DEBUG_ListByNS(ns)})
+	c.JSON(200,gin.H{"message":"Ok","result":	core.PodMap.DebugListbyns(ns)})
 }
 

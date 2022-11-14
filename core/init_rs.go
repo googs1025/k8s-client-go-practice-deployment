@@ -50,7 +50,7 @@ func(rsMap *ReplicaSetMap) Delete(rs *appv1.ReplicaSet){
 // ListByNameSpace 根据namespace获取对应的ReplicaSet
 func(rsMap *ReplicaSetMap) ListByNameSpace(ns string) ([]*appv1.ReplicaSet,error){
 	if list, ok := rsMap.data.Load(ns); ok {
-		return list.([]*appv1.ReplicaSet),nil
+		return list.([]*appv1.ReplicaSet), nil
 	}
 	return nil,fmt.Errorf("pods not found ")
 }

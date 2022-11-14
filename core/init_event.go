@@ -15,8 +15,8 @@ type EventMapStruct struct {
 }
 
 // GetMessage 由namespace、kind、name找到特定的event
-func(eventMap *EventMapStruct) GetMessage(ns string,kind string,name string) string{
-	key := fmt.Sprintf("%s_%s_%s",ns, kind, name)
+func(eventMap *EventMapStruct) GetMessage(ns string, kind string, name string) string {
+	key := fmt.Sprintf("%s-%s-%s", ns, kind, name)
 	if v, ok := eventMap.data.Load(key); ok {
 		return v.(*v1.Event).Message
 	}

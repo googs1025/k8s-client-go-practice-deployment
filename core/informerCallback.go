@@ -7,6 +7,12 @@ import (
 	"log"
 )
 
+/*
+	回调函数：统一操作：
+	调用add update delete方法
+	同步到map中
+ */
+
 // Deployment回调函数
 type DeploymentHandler struct {
 }
@@ -40,7 +46,7 @@ func(ph *PodHandler) OnAdd(obj interface{}){
 }
 
 func(ph *PodHandler) OnUpdate(oldObj, newObj interface{}){
-	err:=PodMap.Update(newObj.(*corev1.Pod))
+	err := PodMap.Update(newObj.(*corev1.Pod))
 	if err != nil {
 		log.Println(err)
 	}
@@ -73,10 +79,11 @@ func(rh *RsHandler)	OnDelete(obj interface{}){
 // Event回调函数
 type EventHandler struct {}
 
-func(eh *EventHandler) storeData(obj interface{},isdelete bool){
+func(eh *EventHandler) storeData(obj interface{}, isDelete bool){
 	if event, ok := obj.(*corev1.Event); ok {
-		key := fmt.Sprintf("%s_%s_%s",event.Namespace,event.InvolvedObject.Kind,event.InvolvedObject.Name)
-		if !isdelete {
+		// InvolvedObject 可以找到事件对应的源对象
+		key := fmt.Sprintf("%s-%s-%s", event.Namespace, event.InvolvedObject.Kind, event.InvolvedObject.Name)
+		if !isDelete {
 			EventMap.data.Store(key,event)
 		} else {
 			EventMap.data.Delete(key)

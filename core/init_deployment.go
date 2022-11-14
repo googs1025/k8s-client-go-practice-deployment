@@ -2,10 +2,7 @@ package core
 
 import (
 	"fmt"
-	"k8s-client-go-api-practice/initClient"
 	v1 "k8s.io/api/apps/v1"
-	"k8s.io/apimachinery/pkg/util/wait"
-	"k8s.io/client-go/informers"
 	"sync"
 )
 
@@ -16,6 +13,12 @@ import (
 type DeploymentMap struct {
 	data sync.Map  // [key string] []*v1.Deployment    key=>namespace
 }
+
+/*
+	使用一个map string -> []*v1.Deployment
+	来存储每个namespace下的deployment
+ */
+
 // Add 添加
 func(depMap *DeploymentMap) Add(dep *v1.Deployment) {
 	if list, ok := depMap.data.Load(dep.Namespace); ok {
@@ -41,9 +44,10 @@ func(depMap *DeploymentMap) Update(dep *v1.Deployment) error {
 func(depMap *DeploymentMap) Delete(dep *v1.Deployment){
 	if list, ok := depMap.data.Load(dep.Namespace); ok {
 		for i,rangeDep := range list.([]*v1.Deployment) {
-			if rangeDep.Name == dep.Name{
+			if rangeDep.Name == dep.Name {
+				// 切片操作
 				newList := append(list.([]*v1.Deployment)[:i], list.([]*v1.Deployment)[i+1:]...)
-				depMap.data.Store(dep.Namespace,newList)
+				depMap.data.Store(dep.Namespace,newList)	// 需要重新存入缓存
 				break
 			}
 		}
@@ -60,10 +64,10 @@ func(depMap *DeploymentMap) ListDeploymentByNamespace(ns string) ([]*v1.Deployme
 }
 
 // GetDeployment 由namespace与deploymentName取到deployment
-func(depMap *DeploymentMap) GetDeployment(ns string,depName string) (*v1.Deployment,error){
+func(depMap *DeploymentMap) GetDeployment(ns string, deploymentName string) (*v1.Deployment,error){
 	if list, ok := depMap.data.Load(ns); ok {
 		for _, item := range list.([]*v1.Deployment) {
-			if item.Name == depName{
+			if item.Name == deploymentName {
 				return item, nil
 			}
 		}
@@ -78,23 +82,4 @@ func init() {
 }
 
 
-// InitDeployment 初始化调用监听deployment事件
-func InitDeployment(){
-	// 创建SharedInformerFactory
-	fact:=informers.NewSharedInformerFactory(initClient.K8sClient, 0)
-	// 加入所有资源的informer
-	depInformer := fact.Apps().V1().Deployments()
-	depInformer.Informer().AddEventHandler(&DeploymentHandler{})
 
-	podInformer := fact.Core().V1().Pods()
-	podInformer.Informer().AddEventHandler(&PodHandler{})
-
-	rsInformer := fact.Apps().V1().ReplicaSets()
-	rsInformer.Informer().AddEventHandler(&RsHandler{})
-
-	eventInformer := fact.Core().V1().Events()
-	eventInformer.Informer().AddEventHandler(&EventHandler{})
-
-	fact.Start(wait.NeverStop)
-
-}
